@@ -14,7 +14,7 @@ import org.apache.storm.tuple.Fields;
 import java.io.Serializable;
 
 public class Topology implements Serializable {
-    private static final String TOPOLOGY_NAME = "normalApp";
+    private static final String TOPOLOGY_NAME = "serverlessApp";
 
     public static void main(String[] args) {
         Config config = new Config();
