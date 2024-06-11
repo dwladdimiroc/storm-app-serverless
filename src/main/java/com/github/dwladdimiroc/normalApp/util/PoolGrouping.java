@@ -14,6 +14,8 @@ import java.util.Random;
 public class PoolGrouping implements LoadAwareCustomStreamGrouping {
     private static final Logger logger = LoggerFactory.getLogger(PoolGrouping.class);
 
+    private LoadMapping load;
+
     private List<Integer>[] rets;
     private int[] targets;
     private int[] loads;
@@ -43,14 +45,9 @@ public class PoolGrouping implements LoadAwareCustomStreamGrouping {
 
     @Override
     public List<Integer> chooseTasks(int taskId, List<Object> values) {
-        throw new RuntimeException("NOT IMPLEMENTED");
-    }
-
-    @Override
-    public List<Integer> chooseTasks(int taskId, List<Object> values, LoadMapping load) {
         int limit = this.replica.getNumReplicas();
         if (targets.length < this.replica.getNumReplicas()){
-           limit = targets.length;
+            limit = targets.length;
         }
 
         if ((lastUpdate + 1000) < System.currentTimeMillis()) {
@@ -76,7 +73,7 @@ public class PoolGrouping implements LoadAwareCustomStreamGrouping {
 
     @Override
     public void refreshLoad(LoadMapping loadMapping) {
-
+        this.load = loadMapping;
     }
 }
 
