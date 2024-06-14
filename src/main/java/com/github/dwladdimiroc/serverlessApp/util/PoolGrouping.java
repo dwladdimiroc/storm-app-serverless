@@ -1,4 +1,4 @@
-package com.github.dwladdimiroc.normalApp.util;
+package com.github.dwladdimiroc.serverlessApp.util;
 
 import org.apache.storm.generated.GlobalStreamId;
 import org.apache.storm.grouping.LoadAwareCustomStreamGrouping;
@@ -23,12 +23,12 @@ public class PoolGrouping implements LoadAwareCustomStreamGrouping {
     private long lastUpdate = 0;
 
     private Random random;
-    private Replica replica;
+    private Replicas replica;
 
 
     @Override
     public void prepare(WorkerTopologyContext context, GlobalStreamId stream, List<Integer> targetTasks) {
-        this.replica = new Replica(stream.get_streamId());
+        this.replica = new Replicas(stream.get_streamId());
         Thread tReplica = new Thread(replica);
         tReplica.start();
 
@@ -60,6 +60,7 @@ public class PoolGrouping implements LoadAwareCustomStreamGrouping {
             total = local_total;
             lastUpdate = System.currentTimeMillis();
         }
+
         int selected = random.nextInt(total);
         int sum = 0;
         for (int i = 0; i < limit; i++) {
