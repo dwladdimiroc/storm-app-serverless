@@ -1,3 +1,3 @@
 mvn clean package
-storm kill -w 0 normalApp
-storm jar target/normalApp-1.0-jar-with-dependencies.jar com.github.dwladdimiroc.normalApp.topology.Topology constant
+storm kill -w 0 serverlessApp
+storm jar target/serverlessApp-1.0-jar-with-dependencies.jar com.github.dwladdimiroc.serverlessApp.topology.Topology constant 10

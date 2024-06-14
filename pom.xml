@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.github.dwladdimiroc</groupId>
-	<artifactId>normalApp</artifactId>
+	<artifactId>serverlessApp</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0</version>
 
@@ -85,7 +85,7 @@
 					<archive>
 						<manifest>
 							<mainClass>
-								com.github.dwladdimiroc.normalApp.topology.Topology
+								com.github.dwladdimiroc.serverlessApp.topology.Topology
 							</mainClass>
 						</manifest>
 					</archive>
