@@ -1,5 +1,5 @@
 # Serverless App
-This project presents the serverless solution in GCP. Bolts process synthetic events that are created by the Spout according to a distribution. 
+This project presents the hybrid solution with VM and serverless in GCP. Bolts process synthetic events that are created by the Spout according to a distribution. 
 
 ## Setting
 To deploy the application, use two parameters: `distribution` and `pool_size`.
