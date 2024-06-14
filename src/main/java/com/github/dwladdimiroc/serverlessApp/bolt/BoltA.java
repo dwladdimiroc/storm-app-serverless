@@ -1,6 +1,6 @@
-package com.github.dwladdimiroc.normalApp.bolt;
+package com.github.dwladdimiroc.serverlessApp.bolt;
 
-import com.github.dwladdimiroc.normalApp.util.Replicas;
+import com.github.dwladdimiroc.serverlessApp.util.Process;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.IRichBolt;
@@ -13,57 +13,34 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class BoltA implements IRichBolt, Serializable {
     private static final Logger logger = LoggerFactory.getLogger(BoltA.class);
+
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
     private int[] array;
 
-    private AtomicInteger numReplicas;
-    private long events;
-    private String stream;
-
-    public BoltA(String stream) {
+    public BoltA() {
         logger.info("Constructor BoltA");
-        this.stream = stream;
     }
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        logger.info("Prepare BoltA");
+
         this.mapConf = stormConf;
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
-
-        this.array = new int[50000];
-        for (int i = 0; i < this.array.length; i++) {
-            this.array[i] = i;
-        }
-
-        this.numReplicas = new AtomicInteger(1);
-        this.events = 0;
-        Thread adaptiveBolt = new Thread(new Replicas(this.stream, this.numReplicas));
-        adaptiveBolt.start();
-        logger.info("Prepare BoltA");
+        this.array = Process.createArray(50000);
     }
 
     @Override
     public void execute(Tuple input) {
-        this.events++;
-//        Utils.sleep(5);
-        int x = (int) (Math.random() * 1000);
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < 100; j++) {
-                if (x == array[i]) {
-                    x = x + j;
-                }
-            }
-        }
+        Process.processing(this.array);
 
-        long idReplica = events % this.numReplicas.get();
-        Values v = new Values(input.getValue(0), idReplica);
+        Values v = new Values(input.getValue(0));
         this.outputCollector.emit("BoltB", v);
         this.outputCollector.ack(input);
     }
@@ -76,7 +53,7 @@ public class BoltA implements IRichBolt, Serializable {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declareStream("BoltB", new Fields("number", "id-replica"));
+        declarer.declareStream("BoltB", new Fields("timestamp"));
     }
 
     @Override

@@ -1,21 +1,28 @@
-package com.github.dwladdimiroc.normalApp.bolt;
+package com.github.dwladdimiroc.serverlessApp.bolt;
 
+import com.github.dwladdimiroc.serverlessApp.util.Process;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.IRichBolt;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
-import org.apache.storm.tuple.Values;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class BoltF implements IRichBolt, Serializable {
+public class BoltG implements IRichBolt, Serializable {
+    private static final Logger logger = LoggerFactory.getLogger(BoltG.class);
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
     private int[] array;
+
+    private AtomicInteger numReplicas;
+    private long events;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
@@ -23,27 +30,15 @@ public class BoltF implements IRichBolt, Serializable {
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
 
-        this.array = new int[15000];
-        for (int i = 0; i < this.array.length; i++) {
-            this.array[i] = i;
-        }
+        this.array = Process.createArray(25000);
+        logger.info("Prepare BoltF");
     }
 
     @Override
     public void execute(Tuple input) {
-//        Utils.sleep(5);
-        int x = (int) (Math.random() * 1000);
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < 100; j++) {
-                if (x == array[i]) {
-                    x = x + j;
-                }
-            }
-        }
-
-//        Values v = new Values(input.getValue(0));
-//        this.outputCollector.emit(v);
-//        this.outputCollector.ack(input);
+        this.events++;
+        Process.processing(this.array);
+        this.outputCollector.ack(input);
     }
 
     @Override
@@ -54,7 +49,7 @@ public class BoltF implements IRichBolt, Serializable {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("number"));
+        declarer.declare(new Fields("number", "id-replica", "data-1", "stream-2"));
     }
 
     @Override
