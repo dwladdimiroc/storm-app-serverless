@@ -1,4 +1,4 @@
-package com.github.dwladdimiroc.serverlessApp.bolt;
+package com.github.dwladdimiroc.serverlessApp.bolt.complex;
 
 import com.github.dwladdimiroc.serverlessApp.util.Process;
 import org.apache.storm.task.OutputCollector;
@@ -7,11 +7,15 @@ import org.apache.storm.topology.IRichBolt;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
+import org.apache.storm.tuple.Values;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Map;
 
-public class BoltF implements IRichBolt, Serializable {
+public class BoltD implements IRichBolt, Serializable {
+    private static final Logger logger = LoggerFactory.getLogger(BoltD.class);
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
@@ -19,17 +23,20 @@ public class BoltF implements IRichBolt, Serializable {
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        logger.info("Prepare BoltD");
+
         this.mapConf = stormConf;
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
-
-        this.array = Process.createArray(15000);
+        this.array = Process.createArray(10000);
     }
 
     @Override
     public void execute(Tuple input) {
         Process.processing(this.array);
-
+        Values v = new Values(input.getValue(0));
+        this.outputCollector.emit("BoltE", v);
+        this.outputCollector.ack(input);
     }
 
     @Override
@@ -40,7 +47,7 @@ public class BoltF implements IRichBolt, Serializable {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("number"));
+        declarer.declareStream("BoltE", new Fields("timestamp"));
     }
 
     @Override

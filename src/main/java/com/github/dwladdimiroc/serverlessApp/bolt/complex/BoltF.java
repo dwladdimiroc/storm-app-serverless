@@ -1,4 +1,4 @@
-package com.github.dwladdimiroc.serverlessApp.bolt;
+package com.github.dwladdimiroc.serverlessApp.bolt.complex;
 
 import com.github.dwladdimiroc.serverlessApp.util.Process;
 import org.apache.storm.task.OutputCollector;
@@ -12,28 +12,36 @@ import org.apache.storm.tuple.Values;
 import java.io.Serializable;
 import java.util.Map;
 
-public class BoltE implements IRichBolt, Serializable {
+public class BoltF implements IRichBolt, Serializable {
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
     private int[] array;
+    private int events;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
         this.mapConf = stormConf;
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
-
-        this.array = Process.createArray(5000);
+        this.events = 0;
+        this.array = Process.createArray(20000);
     }
 
     @Override
     public void execute(Tuple input) {
-//        Utils.sleep(5);
         Process.processing(this.array);
-        Values v = new Values(input.getValue(0));
-        this.outputCollector.emit(v);
-//        this.outputCollector.ack(input);
+        this.events++;
+        if (this.events % 10 == 0) {
+            long idReplica = 0;
+            Values v = new Values(input.getValue(0));
+            this.outputCollector.emit("BoltG", v);
+        } else {
+            long idReplica = 0;
+            Values v = new Values(input.getValue(0));
+            this.outputCollector.emit("BoltH", v);
+        }
+        this.outputCollector.ack(input);
     }
 
     @Override
@@ -44,7 +52,8 @@ public class BoltE implements IRichBolt, Serializable {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("number"));
+        declarer.declareStream("BoltG", new Fields("timestamp"));
+        declarer.declareStream("BoltH", new Fields("timestamp"));
     }
 
     @Override

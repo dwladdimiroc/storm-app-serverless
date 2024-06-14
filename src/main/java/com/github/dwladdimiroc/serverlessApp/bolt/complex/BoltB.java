@@ -1,4 +1,4 @@
-package com.github.dwladdimiroc.serverlessApp.bolt;
+package com.github.dwladdimiroc.serverlessApp.bolt.complex;
 
 import com.github.dwladdimiroc.serverlessApp.util.Process;
 import org.apache.storm.task.OutputCollector;
@@ -7,37 +7,47 @@ import org.apache.storm.topology.IRichBolt;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
+import org.apache.storm.tuple.Values;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
-public class BoltG implements IRichBolt, Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(BoltG.class);
+public class BoltB implements IRichBolt, Serializable {
+    private static final Logger logger = LoggerFactory.getLogger(BoltB.class);
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
     private int[] array;
+    private int events;
 
-    private AtomicInteger numReplicas;
-    private long events;
+    public BoltB() {
+        logger.info("Constructor BoltB");
+    }
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
+        logger.info("Prepare BoltB");
+
         this.mapConf = stormConf;
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
+        this.array = Process.createArray(50000);
 
-        this.array = Process.createArray(25000);
-        logger.info("Prepare BoltF");
+        this.events = 0;
     }
 
     @Override
     public void execute(Tuple input) {
         this.events++;
         Process.processing(this.array);
+        Values v = new Values(input.getValue(0));
+        if ((this.events % 10 == 0) || (this.events % 10 == 1)) {
+            this.outputCollector.emit("BoltC", v);
+        } else {
+            this.outputCollector.emit("BoltF", v);
+        }
         this.outputCollector.ack(input);
     }
 
@@ -49,7 +59,8 @@ public class BoltG implements IRichBolt, Serializable {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declare(new Fields("number", "id-replica", "data-1", "stream-2"));
+        declarer.declareStream("BoltC", new Fields("timestamp"));
+        declarer.declareStream("BoltF", new Fields("timestamp"));
     }
 
     @Override
