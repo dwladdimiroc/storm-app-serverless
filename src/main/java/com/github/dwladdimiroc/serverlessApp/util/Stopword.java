@@ -1,4 +1,4 @@
-package com.github.dwladdimiroc.normalApp.util;
+package com.github.dwladdimiroc.serverlessApp.util;
 
 import java.util.Arrays;
 import java.util.HashSet;

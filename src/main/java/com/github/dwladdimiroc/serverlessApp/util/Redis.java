@@ -1,12 +1,13 @@
-package com.github.dwladdimiroc.normalApp.util;
+package com.github.dwladdimiroc.serverlessApp.util;
 
 import redis.clients.jedis.Jedis;
 
 public class Redis {
-     private static String REDIS_HOST = "10.132.0.31";
+     private static String REDIS_HOST = "127.0.0.1";
+     private static int REDIS_PORT = 6379;
 
     public int getReplicas(String key) {
-        Jedis jedis = new Jedis(REDIS_HOST);
+        Jedis jedis = new Jedis(REDIS_HOST, REDIS_PORT);
         String cachedResponse = jedis.get(key);
         jedis.close();
         if (cachedResponse == null) {

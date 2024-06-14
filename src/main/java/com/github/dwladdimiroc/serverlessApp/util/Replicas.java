@@ -1,16 +1,16 @@
-package com.github.dwladdimiroc.normalApp.util;
+package com.github.dwladdimiroc.serverlessApp.util;
 
 import org.apache.storm.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Replica implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(Replica.class);
+public class Replicas implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(Replicas.class);
 
     private final String name;
     private int numReplicas;
 
-    public Replica(String name) {
+    public Replicas(String name) {
         logger.info("Replica PoolGrouping {}", name);
         this.name = name;
         this.numReplicas = 0;
