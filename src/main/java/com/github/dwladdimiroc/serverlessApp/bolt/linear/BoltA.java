@@ -1,6 +1,5 @@
-package com.github.dwladdimiroc.serverlessApp.bolt;
+package com.github.dwladdimiroc.serverlessApp.bolt.linear;
 
-import com.github.dwladdimiroc.serverlessApp.spout.Spout;
 import com.github.dwladdimiroc.serverlessApp.util.Process;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -9,24 +8,27 @@ import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
-import org.apache.storm.utils.Time;
-import org.apache.storm.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.Map;
 
-public class BoltD implements IRichBolt, Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(BoltD.class);
+public class BoltA implements IRichBolt, Serializable {
+    private static final Logger logger = LoggerFactory.getLogger(BoltA.class);
+
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
     private int[] array;
 
+    public BoltA() {
+        logger.info("Constructor BoltA");
+    }
+
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
-        logger.info("Prepare BoltD");
+        logger.info("Prepare BoltA");
 
         this.mapConf = stormConf;
         this.outputCollector = collector;
@@ -37,8 +39,9 @@ public class BoltD implements IRichBolt, Serializable {
     @Override
     public void execute(Tuple input) {
         Process.processing(this.array);
+
         Values v = new Values(input.getValue(0));
-        this.outputCollector.emit("Latency", v);
+        this.outputCollector.emit("BoltB", v);
         this.outputCollector.ack(input);
     }
 
@@ -50,7 +53,7 @@ public class BoltD implements IRichBolt, Serializable {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declareStream("Latency", new Fields("timestamp"));
+        declarer.declareStream("BoltB", new Fields("timestamp"));
     }
 
     @Override

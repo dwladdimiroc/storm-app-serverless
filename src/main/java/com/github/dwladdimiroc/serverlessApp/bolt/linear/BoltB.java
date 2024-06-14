@@ -1,4 +1,4 @@
-package com.github.dwladdimiroc.serverlessApp.bolt;
+package com.github.dwladdimiroc.serverlessApp.bolt.linear;
 
 import com.github.dwladdimiroc.serverlessApp.util.Process;
 import org.apache.storm.task.OutputCollector;
@@ -14,34 +14,32 @@ import org.slf4j.LoggerFactory;
 import java.io.Serializable;
 import java.util.Map;
 
-public class BoltA implements IRichBolt, Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(BoltA.class);
-
+public class BoltB implements IRichBolt, Serializable {
+    private static final Logger logger = LoggerFactory.getLogger(BoltB.class);
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
     private int[] array;
 
-    public BoltA() {
-        logger.info("Constructor BoltA");
+    public BoltB() {
+        logger.info("Constructor BoltB");
     }
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
-        logger.info("Prepare BoltA");
+        logger.info("Prepare BoltB");
 
         this.mapConf = stormConf;
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
-        this.array = Process.createArray(50000);
+        this.array = Process.createArray(100000);
     }
 
     @Override
     public void execute(Tuple input) {
         Process.processing(this.array);
-
         Values v = new Values(input.getValue(0));
-        this.outputCollector.emit("BoltB", v);
+        this.outputCollector.emit("BoltC", v);
         this.outputCollector.ack(input);
     }
 
@@ -53,7 +51,7 @@ public class BoltA implements IRichBolt, Serializable {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declareStream("BoltB", new Fields("timestamp"));
+        declarer.declareStream("BoltC", new Fields("timestamp"));
     }
 
     @Override
