@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class Metrics implements IRichBolt, Serializable {
-    private static final Logger logger = LoggerFactory.getLogger(BoltD.class);
+    private static final Logger logger = LoggerFactory.getLogger(Metrics.class);
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;

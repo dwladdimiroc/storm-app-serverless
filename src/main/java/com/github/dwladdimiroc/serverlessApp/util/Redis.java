@@ -3,7 +3,7 @@ package com.github.dwladdimiroc.serverlessApp.util;
 import redis.clients.jedis.Jedis;
 
 public class Redis {
-     private static String REDIS_HOST = "127.0.0.1";
+     private static String REDIS_HOST = "10.200.0.3";
      private static int REDIS_PORT = 6379;
 
     public int getReplicas(String key) {

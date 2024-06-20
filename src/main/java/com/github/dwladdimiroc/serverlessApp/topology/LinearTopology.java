@@ -18,8 +18,8 @@ public class LinearTopology implements Serializable {
 
     public static void main(String[] args) {
         Config config = new Config();
-        config.setMessageTimeoutSecs(125);
-        config.setNumWorkers(7);
+        config.setMessageTimeoutSecs(60);
+        config.setNumWorkers(4);
 
         int numParallelism = Integer.parseInt(args[1]);
 
@@ -36,8 +36,6 @@ public class LinearTopology implements Serializable {
                 customGrouping("BoltB", "BoltC", new PoolGrouping());
         builder.setBolt("BoltD", new BoltD(), numParallelism).setNumTasks(numParallelism).
                 customGrouping("BoltC", "BoltD", new PoolGrouping());
-        builder.setBolt("Latency", new Metrics(), 1).setNumTasks(1).
-                shuffleGrouping("BoltD", "Latency");
 
         try {
             StormSubmitter.submitTopology(TOPOLOGY_NAME, config, builder.createTopology());

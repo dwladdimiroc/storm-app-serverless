@@ -1,6 +1,10 @@
 package com.github.dwladdimiroc.serverlessApp.topology;
 
 import com.github.dwladdimiroc.serverlessApp.bolt.*;
+import com.github.dwladdimiroc.serverlessApp.bolt.linear.BoltA;
+import com.github.dwladdimiroc.serverlessApp.bolt.linear.BoltB;
+import com.github.dwladdimiroc.serverlessApp.bolt.linear.BoltC;
+import com.github.dwladdimiroc.serverlessApp.bolt.linear.BoltD;
 import com.github.dwladdimiroc.serverlessApp.spout.Spout;
 import com.github.dwladdimiroc.serverlessApp.util.PoolGrouping;
 import org.apache.storm.Config;

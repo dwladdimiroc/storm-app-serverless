@@ -1,2 +1,2 @@
 mvn clean package
-gcloud compute scp target/normalApp-1.0-jar-with-dependencies.jar sps-storm-central-backup-1:~/scripts/App-1-Fix.jar
+gcloud compute scp target/serverlessApp-1.0-jar-with-dependencies.jar sps-storm-nimbus:~/scripts/serverlessApp.jar
