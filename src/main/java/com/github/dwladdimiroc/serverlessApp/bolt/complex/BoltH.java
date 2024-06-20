@@ -1,6 +1,7 @@
 package com.github.dwladdimiroc.serverlessApp.bolt.complex;
 
 import com.github.dwladdimiroc.serverlessApp.bolt.linear.BoltC;
+import com.github.dwladdimiroc.serverlessApp.util.Process;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.IRichBolt;
@@ -33,10 +34,7 @@ public class BoltH implements IRichBolt, Serializable {
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
 
-        this.array = new int[50000];
-        for (int i = 0; i < this.array.length; i++) {
-            this.array[i] = i;
-        }
+        this.array = Process.createArray(50000);
 
         this.events = 0;
         logger.info("Prepare BoltH");
@@ -45,14 +43,7 @@ public class BoltH implements IRichBolt, Serializable {
     @Override
     public void execute(Tuple input) {
         this.events++;
-        int x = (int) (Math.random() * 1000);
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < 100; j++) {
-                if (x == array[i]) {
-                    x = x + j;
-                }
-            }
-        }
+        Process.processing(this.array);
 
         Values v = new Values(input.getValue(0));
         this.outputCollector.emit("BoltG", v);
@@ -67,7 +58,7 @@ public class BoltH implements IRichBolt, Serializable {
 
     @Override
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
-        declarer.declareStream("BoltG", new Fields("time"));
+        declarer.declareStream("BoltG", new Fields("timestamp"));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.github.dwladdimiroc.serverlessApp.bolt.linear;
 
+import com.github.dwladdimiroc.serverlessApp.util.HTTP;
 import com.github.dwladdimiroc.serverlessApp.util.Process;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -21,6 +22,8 @@ public class BoltC implements IRichBolt, Serializable {
     private String id;
     private int[] array;
 
+    private boolean serverless;
+
     public BoltC() {
         logger.info("Constructor BoltC");
     }
@@ -33,11 +36,18 @@ public class BoltC implements IRichBolt, Serializable {
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
         this.array = Process.createArray(75000);
+
+        this.serverless = true;
     }
 
     @Override
     public void execute(Tuple input) {
-        Process.processing(this.array);
+        if (serverless) {
+            HTTP.function(this.array.length);
+        } else{
+            Process.processing(this.array);
+        }
+
         Values v = new Values(input.getValue(0));
         this.outputCollector.emit("BoltD", v);
         this.outputCollector.ack(input);
