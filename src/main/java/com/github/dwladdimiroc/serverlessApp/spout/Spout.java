@@ -35,6 +35,7 @@ public class Spout implements IRichSpout, Serializable {
 
     @Override
     public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
+        logger.info("Prepare Spout");
         this.conf = conf;
         this.context = context;
         this.collector = collector;
@@ -91,6 +92,7 @@ public class Spout implements IRichSpout, Serializable {
         } else {
             Values values = new Values(Time.currentTimeMillis());
             this.collector.emit("BoltA", values);
+//            this.collector.emit("BoltA", values, values.get(0));
         }
     }
 
