@@ -1,6 +1,6 @@
 package com.github.dwladdimiroc.serverlessApp.bolt.linear;
 
-import com.github.dwladdimiroc.serverlessApp.util.HTTP;
+import com.github.dwladdimiroc.serverlessApp.util.Serverless;
 import com.github.dwladdimiroc.serverlessApp.util.Process;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.util.Map;
 
 public class BoltB implements IRichBolt, Serializable {
@@ -20,12 +22,17 @@ public class BoltB implements IRichBolt, Serializable {
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
-    private int[] array;
+    private int size;
+
+    private int taskIndex;
 
     private boolean serverless;
+    private HttpClient client;
+    private HttpRequest request;
 
-    public BoltB() {
+    public BoltB(boolean serverless) {
         logger.info("Constructor BoltB");
+        this.serverless = serverless;
     }
 
     @Override
@@ -35,22 +42,27 @@ public class BoltB implements IRichBolt, Serializable {
         this.mapConf = stormConf;
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
-        this.array = Process.createArray(100000);
+        this.size = 100000 + (int) (Math.random() * 1000);
 
-        this.serverless = true;
+        this.taskIndex = context.getThisTaskIndex()+1;
+
+        if (serverless) {
+            this.client = HttpClient.newHttpClient();
+            this.request = Serverless.request(this.getClass().getSimpleName(), this.taskIndex, this.size);
+        }
     }
 
     @Override
     public void execute(Tuple input) {
         if (serverless) {
-            HTTP.function(this.array.length);
+            Serverless.function(client, request);
         } else{
-            Process.processing(this.array);
+            Process.processing(this.size);
         }
 
         Values v = new Values(input.getValue(0));
         this.outputCollector.emit("BoltC", v);
-        this.outputCollector.ack(input);
+        //this.outputCollector.ack(input);
     }
 
     @Override
