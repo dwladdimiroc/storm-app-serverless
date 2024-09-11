@@ -19,7 +19,7 @@ public class BoltG implements IRichBolt, Serializable {
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
-    private int[] array;
+    private int size;
 
     private AtomicInteger numReplicas;
     private long events;
@@ -30,14 +30,14 @@ public class BoltG implements IRichBolt, Serializable {
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
 
-        this.array = Process.createArray(20000);
+        this.size = 20000 + (int) (Math.random() * 1000);
         logger.info("Prepare BoltF");
     }
 
     @Override
     public void execute(Tuple input) {
         this.events++;
-        Process.processing(this.array);
+        Process.processing(this.size);
         this.outputCollector.ack(input);
     }
 

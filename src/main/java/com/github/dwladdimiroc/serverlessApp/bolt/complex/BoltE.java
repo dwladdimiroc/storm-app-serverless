@@ -16,7 +16,7 @@ public class BoltE implements IRichBolt, Serializable {
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
-    private int[] array;
+    private int size;
 
     @Override
     public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
@@ -24,12 +24,12 @@ public class BoltE implements IRichBolt, Serializable {
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
 
-        this.array = Process.createArray(10000);
+        this.size = 10000 + (int) (Math.random() * 1000);
     }
 
     @Override
     public void execute(Tuple input) {
-        Process.processing(this.array);
+        Process.processing(this.size);
         Values v = new Values(input.getValue(0));
         this.outputCollector.emit(v);
         this.outputCollector.ack(input);

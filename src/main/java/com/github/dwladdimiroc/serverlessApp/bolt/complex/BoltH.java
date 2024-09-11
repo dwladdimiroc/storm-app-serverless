@@ -20,7 +20,7 @@ public class BoltH implements IRichBolt, Serializable {
     private OutputCollector outputCollector;
     private Map mapConf;
     private String id;
-    private int[] array;
+    private int size;
 
     private long events;
 
@@ -34,7 +34,7 @@ public class BoltH implements IRichBolt, Serializable {
         this.outputCollector = collector;
         this.id = context.getThisComponentId();
 
-        this.array = Process.createArray(50000);
+        this.size = 50000 + (int) (Math.random() * 1000);
 
         this.events = 0;
         logger.info("Prepare BoltH");
@@ -43,7 +43,7 @@ public class BoltH implements IRichBolt, Serializable {
     @Override
     public void execute(Tuple input) {
         this.events++;
-        Process.processing(this.array);
+        Process.processing(this.size);
 
         Values v = new Values(input.getValue(0));
         this.outputCollector.emit("BoltG", v);
