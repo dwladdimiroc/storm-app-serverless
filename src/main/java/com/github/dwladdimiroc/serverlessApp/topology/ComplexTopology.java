@@ -1,16 +1,9 @@
 package com.github.dwladdimiroc.serverlessApp.topology;
 
-import com.github.dwladdimiroc.serverlessApp.bolt.*;
-import com.github.dwladdimiroc.serverlessApp.bolt.complex.BoltE;
-import com.github.dwladdimiroc.serverlessApp.bolt.complex.BoltF;
-import com.github.dwladdimiroc.serverlessApp.bolt.complex.BoltG;
-import com.github.dwladdimiroc.serverlessApp.bolt.complex.BoltH;
-import com.github.dwladdimiroc.serverlessApp.bolt.linear.BoltA;
-import com.github.dwladdimiroc.serverlessApp.bolt.linear.BoltB;
-import com.github.dwladdimiroc.serverlessApp.bolt.linear.BoltC;
-import com.github.dwladdimiroc.serverlessApp.bolt.linear.BoltD;
+import com.github.dwladdimiroc.serverlessApp.bolt.Metrics;
+import com.github.dwladdimiroc.serverlessApp.bolt.complex.*;
 import com.github.dwladdimiroc.serverlessApp.spout.Spout;
-import com.github.dwladdimiroc.serverlessApp.util.PoolGrouping;
+import com.github.dwladdimiroc.serverlessApp.util.LoadAwarePoolGrouping;
 import org.apache.storm.Config;
 import org.apache.storm.StormSubmitter;
 import org.apache.storm.topology.TopologyBuilder;
@@ -34,30 +27,30 @@ public class ComplexTopology implements Serializable {
         // Set Bolts
         // Spout -> BoltA -> BoltB
         builder.setBolt("BoltA", new BoltA(), numParallelism).setNumTasks(numParallelism).
-                customGrouping("Spout", "BoltA", new PoolGrouping());
+                customGrouping("Spout", "BoltA", new LoadAwarePoolGrouping());
         // BoltA -> BoltB -> BoltC || BoltF
         builder.setBolt("BoltB", new BoltB(), numParallelism).setNumTasks(numParallelism).
-                customGrouping("BoltA", "BoltB", new PoolGrouping());
+                customGrouping("BoltA", "BoltB", new LoadAwarePoolGrouping());
         // BoltB -> BoltC -> BoltD
         builder.setBolt("BoltC", new BoltC(), numParallelism).setNumTasks(numParallelism).
-                customGrouping("BoltB", "BoltC", new PoolGrouping());
+                customGrouping("BoltB", "BoltC", new LoadAwarePoolGrouping());
         // BoltC -> BoltD -> BoltE
         builder.setBolt("BoltD", new BoltD(), numParallelism).setNumTasks(numParallelism)
-                .customGrouping("BoltC", "BoltD", new PoolGrouping());
+                .customGrouping("BoltC", "BoltD", new LoadAwarePoolGrouping());
         // BoltD || BoltG -> BoltE
         builder.setBolt("BoltE", new BoltE(), numParallelism).setNumTasks(numParallelism)
-                .customGrouping("BoltD", "BoltE", new PoolGrouping())
-                .customGrouping("BoltG", "BoltE", new PoolGrouping());
+                .customGrouping("BoltD", "BoltE", new LoadAwarePoolGrouping())
+                .customGrouping("BoltG", "BoltE", new LoadAwarePoolGrouping());
         // BoltB -> BoltF -> BoltG || BoltH
         builder.setBolt("BoltF", new BoltF(), numParallelism).setNumTasks(numParallelism)
-                .customGrouping("BoltB", "BoltF", new PoolGrouping());
+                .customGrouping("BoltB", "BoltF", new LoadAwarePoolGrouping());
         // BoltF || BoltH -> BoltG -> BoltE
         builder.setBolt("BoltG", new BoltG(), numParallelism).setNumTasks(numParallelism)
-                .customGrouping("BoltF", "BoltG", new PoolGrouping())
-                .customGrouping("BoltH", "BoltG", new PoolGrouping());
+                .customGrouping("BoltF", "BoltG", new LoadAwarePoolGrouping())
+                .customGrouping("BoltH", "BoltG", new LoadAwarePoolGrouping());
         // BoltF -> BoltH -> BoltG
         builder.setBolt("BoltH", new BoltH(), numParallelism).setNumTasks(numParallelism)
-                .customGrouping("BoltF", "BoltH", new PoolGrouping());
+                .customGrouping("BoltF", "BoltH", new LoadAwarePoolGrouping());
 
         builder.setBolt("Latency", new Metrics(), 1).setNumTasks(1).
                 shuffleGrouping("BoltE", "Latency");
