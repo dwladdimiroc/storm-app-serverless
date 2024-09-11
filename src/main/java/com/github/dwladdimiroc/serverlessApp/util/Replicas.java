@@ -11,7 +11,7 @@ public class Replicas implements Runnable {
     private int numReplicas;
 
     public Replicas(String name) {
-        logger.info("Replica PoolGrouping {}", name);
+        logger.info("Thread PoolGrouping {}", name);
         this.name = name;
         this.numReplicas = 0;
     }

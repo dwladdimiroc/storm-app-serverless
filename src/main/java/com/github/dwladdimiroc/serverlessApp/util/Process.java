@@ -9,7 +9,8 @@ public class Process {
         return array;
     }
 
-    public static void processing(int[] array) {
+    public static void processing(int size) {
+        int[] array = createArray(size);
         int x = (int) (Math.random() * 1000);
         for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < 100; j++) {

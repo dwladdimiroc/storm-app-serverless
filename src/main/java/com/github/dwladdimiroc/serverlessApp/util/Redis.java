@@ -3,8 +3,9 @@ package com.github.dwladdimiroc.serverlessApp.util;
 import redis.clients.jedis.Jedis;
 
 public class Redis {
-     private static String REDIS_HOST = "10.200.0.3";
-     private static int REDIS_PORT = 6379;
+    //    private static String REDIS_HOST = "10.200.0.3";
+    private static String REDIS_HOST = "localhost";
+    private static int REDIS_PORT = 6379;
 
     public int getReplicas(String key) {
         Jedis jedis = new Jedis(REDIS_HOST, REDIS_PORT);
